@@ -5,6 +5,8 @@ import { redirect } from 'next/navigation'
 export default async function Home() {
   const {isAuthenticated,getUser}=getKindeServerSession();
 
+  
+
   if(!(await isAuthenticated())){
     return redirect(
       "/api/auth/login?post_login_redirect_url=https://techtutors.vercel.app/");
