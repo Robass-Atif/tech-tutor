@@ -7,14 +7,14 @@ export default async function Home() {
 
   if(!(await isAuthenticated())){
     return redirect(
-      "/api/auth/login?post_login_redirect_url=http://localhost:3000/");
+      "/api/auth/login?post_login_redirect_url=https://techtutors.vercel.app/");
   }
 
 const user=await getUser();
 
 if (!user) {
   return redirect(
-    "/api/auth/verify-email?post_verify_email_redirect_url=http://localhost:3000/");
+    "/api/auth/verify-email?post_verify_email_redirect_url=https://techtutors.vercel.app/");
 }
 
 
