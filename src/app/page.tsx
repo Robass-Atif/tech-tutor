@@ -1,27 +1,58 @@
+// pages/index.tsx
+import { GetServerSideProps } from 'next';
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
-import Navbar from '../Navbar';
-import { redirect } from 'next/navigation';
+import { NextApiRequest } from 'next';
 
-export default async function Home() {
-  const { isAuthenticated, getUser } = getKindeServerSession();
+
+type User = {
+  email: string;
+  // Add any other user properties you may need
+};
+
+type HomeProps = {
+  user: User;
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const req = context.req as NextApiRequest;
+  const { isAuthenticated, getUser } = getKindeServerSession(req);
 
   // Check if the user is authenticated
   if (!(await isAuthenticated())) {
-    return redirect("/api/auth/verify-email?post_verify_email_redirect_url=http://localhost:3000/");
+    return {
+      redirect: {
+        destination: "/api/auth/verify-email?post_verify_email_redirect_url=https://techtutors.vercel.app/",
+        permanent: false,
+      },
+    };
   }
 
   const user = await getUser();
 
   // Check if the user is verified
   if (!user) {
-    return redirect("//api/auth/verify-email?post_verify_email_redirect_url=http://localhost:3000/");
+    return {
+      redirect: {
+        destination: "/api/auth/verify-email?post_verify_email_redirect_url=https://techtutors.vercel.app/",
+        permanent: false,
+      },
+    };
   }
-// /api/auth/verify-email?post_verify_email_redirect_url=https://techtutors.vercel.app/
-  // Return the component if user is authenticated and verified
+
+  return {
+    props: {
+      user,
+    },
+  };
+};
+
+const Home = ({ user }: HomeProps) => {
   return (
     <>
       
-      hi {user.email}
+      <h1>Welcome, {user.email}</h1>
     </>
   );
-}
+};
+
+export default Home;
