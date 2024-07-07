@@ -1,5 +1,7 @@
+"use client";
+
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 
 type User = {
@@ -7,18 +9,27 @@ type User = {
   // Add any other user properties you may need
 };
 
-type HomeProps = {
-  user: User | null;
-};
-
-const Home = ({ user }: HomeProps) => {
+const Home = () => {
+  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    if (!user) {
-      router.push('/signup');
-    }
-  }, [user, router]);
+    const checkAuth = async () => {
+      try {
+        const { isAuthenticated, getUser } = getKindeServerSession();
+        if (!(await isAuthenticated())) {
+          router.push('/signup');
+        } else {
+          const user = await getUser();
+          setUser(user);
+        }
+      } catch (error) {
+        console.error('Authentication check failed:', error);
+        router.push('/signup');
+      }
+    };
+    checkAuth();
+  }, [router]);
 
   if (!user) {
     return <div>Loading...</div>;
@@ -31,30 +42,5 @@ const Home = ({ user }: HomeProps) => {
     </>
   );
 };
-
-export async function getServerSideProps(context: any) {
-  try {
-    const { isAuthenticated, getUser } = getKindeServerSession(context.req, context.res);
-
-    if (!(await isAuthenticated())) {
-      return {
-        redirect: {
-          destination: '/signup',
-          permanent: false,
-        },
-      };
-    }
-
-    const user = await getUser();
-    return {
-      props: { user },
-    };
-  } catch (error) {
-    console.error('Authentication check failed:', error);
-    return {
-      props: { user: null },
-    };
-  }
-}
 
 export default Home;
