@@ -1,55 +1,48 @@
-// pages/index.tsx
-import { GetServerSideProps } from 'next';
+// src/app/page.tsx
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
-import { NextApiRequest } from 'next';
-
 
 type User = {
-  email: string;
+  email: string | null;
   // Add any other user properties you may need
 };
 
-type HomeProps = {
-  user: User;
-};
+const Home = () => {
+  const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const req = context.req as NextApiRequest;
-  const { isAuthenticated, getUser } = getKindeServerSession(req);
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { isAuthenticated, getUser } = getKindeServerSession();
 
-  // Check if the user is authenticated
-  if (!(await isAuthenticated())) {
-    return {
-      redirect: {
-        destination: "/api/auth/verify-email?post_verify_email_redirect_url=https://techtutors.vercel.app/",
-        permanent: false,
-      },
+      if (!(await isAuthenticated())) {
+        router.push(
+          '/api/auth/verify-email?post_verify_email_redirect_url=https://techtutors.vercel.app/'
+        );
+        return;
+      }
+
+      const user = await getUser();
+      if (!user) {
+        router.push(
+          '/api/auth/verify-email?post_verify_email_redirect_url=https://techtutors.vercel.app/'
+        );
+        return;
+      }
+
+      setUser(user as User);
     };
-  }
 
-  const user = await getUser();
+    checkAuth();
+  }, [router]);
 
-  // Check if the user is verified
   if (!user) {
-    return {
-      redirect: {
-        destination: "/api/auth/verify-email?post_verify_email_redirect_url=https://techtutors.vercel.app/",
-        permanent: false,
-      },
-    };
+    return <div>Loading...</div>;
   }
 
-  return {
-    props: {
-      user,
-    },
-  };
-};
-
-const Home = ({ user }: HomeProps) => {
   return (
     <>
-      
       <h1>Welcome, {user.email}</h1>
     </>
   );
