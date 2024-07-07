@@ -1,6 +1,9 @@
 // src/app/page.tsx
+
+"use client";
+
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 
 type User = {
