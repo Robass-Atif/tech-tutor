@@ -1,5 +1,3 @@
-// src/app/page.tsx
-
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -13,35 +11,46 @@ type User = {
 
 const Home = () => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true); // Add loading state
   const router = useRouter();
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { isAuthenticated, getUser } = getKindeServerSession();
+      try {
+        const { isAuthenticated, getUser } = getKindeServerSession();
 
-      if (!(await isAuthenticated())) {
-        router.push(
-          '/api/auth/verify-email?post_verify_email_redirect_url=https://techtutors.vercel.app/'
-        );
-        return;
+        if (!(await isAuthenticated())) {
+          router.push(
+            '/api/auth/verify-email?post_verify_email_redirect_url=https://techtutors.vercel.app/'
+          );
+          return;
+        }
+
+        const user = await getUser();
+        if (!user) {
+          router.push(
+            '/api/auth/verify-email?post_verify_email_redirect_url=https://techtutors.vercel.app/'
+          );
+          return;
+        }
+
+        setUser(user as User);
+      } catch (error) {
+        console.error('Authentication check failed:', error);
+      } finally {
+        setLoading(false); // Ensure loading state is updated
       }
-
-      const user = await getUser();
-      if (!user) {
-        router.push(
-          '/api/auth/verify-email?post_verify_email_redirect_url=https://techtutors.vercel.app/'
-        );
-        return;
-      }
-
-      setUser(user as User);
     };
 
     checkAuth();
   }, [router]);
 
-  if (!user) {
+  if (loading) {
     return <div>Loading...</div>;
+  }
+
+  if (!user) {
+    return <div>No user data available.</div>;
   }
 
   return (
