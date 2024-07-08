@@ -1,23 +1,24 @@
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
-import { redirect } from 'next/navigation';
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import Navbar from '../Navbar'
+import { redirect } from 'next/navigation'
 
 export default async function Home() {
   const { isAuthenticated, getUser } = getKindeServerSession();
 
   if (!(await isAuthenticated())) {
-    return redirect("/api/auth/login");
+    return redirect("/api/auth/login?post_login_redirect_url=http://localhost:3000/");
   }
 
   const user = await getUser();
 
   if (!user) {
-    return redirect("/api/auth/login");
+    return redirect("/api/auth/verify-email?post_verify_email_redirect_url=http://localhost:3000/");
   }
 
   return (
     <>
-    
-      <p>Hi {user.email}</p>
+      <Navbar />
+      <p>hi {user.email}</p>
     </>
   );
 }
