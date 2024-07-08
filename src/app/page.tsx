@@ -1,46 +1,23 @@
-"use client";
-
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
+import { redirect } from 'next/navigation';
 
-type User = {
-  email: string | null;
-  // Add any other user properties you may need
-};
+export default async function Home() {
+  const { isAuthenticated, getUser } = getKindeServerSession();
 
-const Home = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const router = useRouter();
+  if (!(await isAuthenticated())) {
+    return redirect("/api/auth/login");
+  }
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const { isAuthenticated, getUser } = getKindeServerSession();
-        if (!(await isAuthenticated())) {
-          router.push('/signup');
-        } else {
-          const user = await getUser();
-          setUser(user);
-        }
-      } catch (error) {
-        console.error('Authentication check failed:', error);
-        router.push('/signup');
-      }
-    };
-    checkAuth();
-  }, [router]);
+  const user = await getUser();
 
   if (!user) {
-    return <div>Loading...</div>;
+    return redirect("/api/auth/login");
   }
 
   return (
     <>
-      <h1>Welcome, {user.email}</h1>
-      <p>This is your dashboard.</p>
+    
+      <p>Hi {user.email}</p>
     </>
   );
-};
-
-export default Home;
+}
