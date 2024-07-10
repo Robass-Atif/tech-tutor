@@ -22,7 +22,7 @@ export default async function Home() {
     <>
 
       <Navbar />
-      <HeroSection/>
+      {/* <HeroSection/> */}
       
     </>
   );
