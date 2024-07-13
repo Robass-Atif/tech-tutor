@@ -23,7 +23,7 @@ export default function RootLayout({
         <script noModule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
       </Head>
       <body className={inter.className}>
-        <Navbar />
+        
         {children}
       </body>
     </html>
