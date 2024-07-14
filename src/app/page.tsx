@@ -4,6 +4,8 @@ import { redirect } from 'next/navigation'
 import Navbar from '../Component pages/Navbar'
 import    '../Component pages/HeroSection'
 import HeroSection from '../Component pages/HeroSection';
+ import lowHero from '../Component pages/lowHero';
+import LowHero from '../Component pages/lowHero';
 
 export default async function Home() {
   const { isAuthenticated, getUser } = getKindeServerSession();
@@ -21,8 +23,10 @@ export default async function Home() {
   return (
     <>
 
-      <Navbar />
+      
       <HeroSection/>
+      <LowHero/>
+      
       
     </>
   );
