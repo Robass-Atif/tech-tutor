@@ -5,7 +5,7 @@ import imageC from '..../public/guru.png'; // Correct path to your hero image
 const HeroSection = () => {
   return (
 
-    <main className="container mx-auto px-4 py-2 flex flex-col lg:flex-row items-center  xl:mt-0 sm:mt-12 ">
+    <main className="container mx-auto px-4 py-2 flex flex-col lg:flex-row items-center  xl:mt-0 sm:mt-12  mb-20">
       <div className="lg:w-1/2 mb-10 lg:mb-0 pr-10 mt-8 xl:mt-0 md:mt-0 sm:mt-0 ">
         <h1 className="text-4xl font-bold mb-4">A small business is only as good as its tools.</h1>
         <p className="text-lg text-gray-700 mb-6">
